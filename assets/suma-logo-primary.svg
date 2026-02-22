@@ -1,0 +1,41 @@
+<svg width="600" height="220" viewBox="0 0 600 220" xmlns="http://www.w3.org/2000/svg">
+
+  <!-- Background -->
+  <rect width="600" height="220" fill="#000000"/>
+
+  <!-- SUMA text -->
+  <text
+    x="300"
+    y="105"
+    font-family="Inter, Montserrat, Arial, sans-serif"
+    font-size="80"
+    font-weight="700"
+    fill="#E7800C"
+    text-anchor="middle"
+    letter-spacing="4">
+    SUMA
+  </text>
+
+  <!-- Divider line -->
+  <line
+    x1="140"
+    y1="135"
+    x2="460"
+    y2="135"
+    stroke="#E7800C"
+    stroke-width="3"/>
+
+  <!-- Subtitle -->
+  <text
+    x="300"
+    y="180"
+    font-family="Inter, Montserrat, Arial, sans-serif"
+    font-size="36"
+    font-weight="500"
+    fill="#E7800C"
+    text-anchor="middle"
+    letter-spacing="2">
+    Asesoría en Seguros
+  </text>
+
+</svg>
