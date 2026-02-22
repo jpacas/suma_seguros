@@ -510,6 +510,38 @@ nav a:focus-visible {
   font-size: 0.86rem;
 }
 
+.direct-form {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.direct-form-grid {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.direct-form label {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.direct-form input,
+.direct-form select,
+.direct-form textarea {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid #d6d6d6;
+  border-radius: 10px;
+  padding: 0.7rem 0.8rem;
+  font-size: 0.95rem;
+  font-family: inherit;
+}
+
+.direct-form textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
 .chat-side {
   border-color: #e3d0b7;
   background: #fffdf9;

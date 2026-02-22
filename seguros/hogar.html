@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Alcances del seguro de hogar y residencial en SUMA.">
+  <title>SUMA | Seguro de Hogar</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="brand" href="../index.html" aria-label="Ir al inicio de SUMA">
+        <img src="../assets/suma-logo-primary.svg" alt="Logo SUMA Asesoria en Seguros" width="160" height="64">
+      </a>
+      <nav aria-label="Navegacion principal">
+        <a href="../index.html#servicios">Servicios</a>
+        <a href="../index.html#faq">FAQ</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero section">
+      <div class="container hero-shell">
+        <p class="kicker">Seguro de Hogar</p>
+        <h1>Alcances del seguro de hogar / residencial</h1>
+        <p class="lead">Proteccion para vivienda y contenido ante eventos imprevistos, con cobertura adaptable para casa o apartamento.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container cards cards-3">
+        <article class="panel">
+          <h3>Que suele cubrir</h3>
+          <ul class="mini-list">
+            <li>Danos por incendio y eventos accidentales.</li>
+            <li>Proteccion de estructura y contenido.</li>
+            <li>Robo segun limites del plan.</li>
+            <li>Responsabilidad civil del hogar.</li>
+          </ul>
+        </article>
+        <article class="panel">
+          <h3>Exclusiones frecuentes</h3>
+          <ul class="mini-list">
+            <li>Desgaste natural y falta de mantenimiento.</li>
+            <li>Bienes no declarados en lista asegurada.</li>
+            <li>Eventos excluidos por condiciones particulares.</li>
+            <li>Danos fuera de limites y sublimites contratados.</li>
+          </ul>
+        </article>
+        <article class="panel">
+          <h3>Datos para cotizar</h3>
+          <ul class="mini-list">
+            <li>Ubicacion y tipo de inmueble.</li>
+            <li>Valor aproximado de vivienda y contenido.</li>
+            <li>Uso habitacional o arrendamiento.</li>
+            <li>Coberturas adicionales deseadas.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="section final-cta">
+      <div class="container final-shell">
+        <h2>Quieres proteger tu patrimonio residencial?</h2>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="../index.html">Volver y abrir chat</a>
+          <a class="btn btn-secondary" href="../index.html#servicios">Ver otros seguros</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-alt" id="contacto-directo">
+      <div class="container">
+        <div class="section-head">
+          <h2>Prefieres contacto directo con Sofia?</h2>
+          <p>Si no avanzaste con el asistente, dejanos tus datos y tu caso para continuar por atencion personalizada.</p>
+        </div>
+        <form id="directContactForm" class="direct-form panel" autocomplete="on">
+          <div class="direct-form-grid">
+            <label for="directName">Nombre completo</label>
+            <input id="directName" name="name" type="text" required>
+            <label for="directPhone">Telefono</label>
+            <input id="directPhone" name="phone" type="tel" required>
+            <label for="directEmail">Correo (opcional)</label>
+            <input id="directEmail" name="email" type="email">
+            <label for="directInsuranceType">Tipo de seguro</label>
+            <select id="directInsuranceType" name="insuranceType" required>
+              <option value="">Selecciona una opcion</option>
+              <option value="Vehiculo">Vehiculo</option>
+              <option value="Gastos medicos">Gastos medicos</option>
+              <option value="Vida">Vida</option>
+              <option value="Hogar">Hogar / Residencial</option>
+              <option value="Empresas">Empresas</option>
+              <option value="Revision de poliza">Revision de poliza</option>
+            </select>
+            <label for="directMessage">Que necesitas resolver?</label>
+            <textarea id="directMessage" name="message" rows="4" required></textarea>
+            <label for="directAttachments">Adjuntar archivos (opcional)</label>
+            <input id="directAttachments" name="attachments" type="file" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+          </div>
+          <div class="cta-row">
+            <button class="btn btn-primary" type="submit">Enviar formulario</button>
+          </div>
+          <p class="chat-note" id="directContactFeedback" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+  <script src="../js/main.js"></script>
+</body>
+</html>

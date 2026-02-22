@@ -3,6 +3,7 @@ const CHAT_CONFIG = {
   messageEndpoint: "/api/chat/message",
   intents: {
     general: "Quiero orientacion general sobre seguros.",
+    cotizar: "Quiero cotizar un seguro.",
     vehiculo: "Quiero informacion para seguro de vehiculo.",
     gmm: "Quiero informacion sobre seguro de gastos medicos.",
     vida: "Quiero informacion sobre seguro de vida.",
@@ -13,10 +14,16 @@ const CHAT_CONFIG = {
   }
 };
 
+const CONTACT_CONFIG = {
+  contactEndpoint: "/api/contact",
+  maxFiles: 3,
+  maxFileSizeBytes: 5 * 1024 * 1024
+};
+
 const CHAT_UI_CONFIG = {
   tone: "formal",
   autoOpen: {
-    enabled: true,
+    enabled: false,
     delayMs: 12000,
     scrollPercent: 45,
     exitIntent: true,
@@ -29,19 +36,7 @@ const chatState = {
   busy: false,
   initialized: false,
   modalTimer: null,
-  lastGreetingKey: "",
   autoOpenCount: 0
-};
-
-const CHAT_CONTEXT_COPY = {
-  general: "Puedo ayudarte con coberturas, deducibles y comparacion de opciones para tu caso.",
-  vehiculo: "Si deseas, empezamos por tipo de uso, marca/modelo y nivel de cobertura para vehiculo.",
-  gmm: "Para gastos medicos, te guio por red hospitalaria, deducibles y limites recomendados.",
-  vida: "En vida, puedo orientarte segun dependientes, plazo y objetivo de proteccion.",
-  hogar: "Para hogar, revisamos cobertura de estructura, contenido y riesgos frecuentes.",
-  empresas: "En empresas, puedo orientarte en RC, flotillas, propiedad y programas para colaboradores.",
-  revision: "Para revision de poliza, te indico que informacion compartir para detectar brechas y sobrecostos.",
-  escalar: "Tambien puedo preparar el caso para que Sofia lo revise personalmente."
 };
 
 function initSmoothScroll() {
@@ -74,6 +69,7 @@ function appendMessage(text, role = "assistant") {
   block.textContent = text;
   messages.appendChild(block);
   messages.scrollTop = messages.scrollHeight;
+  clearInputPlaceholder();
 }
 
 function appendMetaMessage(text) {
@@ -87,30 +83,17 @@ function appendMetaMessage(text) {
   messages.scrollTop = messages.scrollHeight;
 }
 
-function resolveSourceContext(element) {
-  if (!element) return "esta pagina";
-  const section = element.closest("section");
-  if (!section) return "esta pagina";
-
-  const title = section.querySelector("h2, h1");
-  if (!title) return "esta pagina";
-  return title.textContent.trim();
-}
-
-function appendContextGreeting(intent, sourceLabel) {
-  const detail = CHAT_CONTEXT_COPY[intent] || CHAT_CONTEXT_COPY.general;
-  const greetingKey = `${intent}:${sourceLabel}`;
-  if (chatState.lastGreetingKey === greetingKey) return;
-
-  appendMessage(`Veo que vienes de "${sourceLabel}". ${detail}`, "assistant");
-  chatState.lastGreetingKey = greetingKey;
-}
-
 function getWelcomeMessage() {
   if (CHAT_UI_CONFIG.tone === "cercano") {
-    return "Hola, soy SofIA. Estoy aqui para ayudarte con tus seguros en El Salvador, de forma simple y rapida.";
+    return "Hola, soy tu asistente virtual. Te ayudo a cotizar o revisar tu poliza de forma simple.";
   }
-  return "Hola. Soy SofIA, asistente virtual de SUMA. Puedo orientarte sobre polizas y seguros en El Salvador.";
+  return "Hola. Soy tu asistente virtual de SUMA. Dime si quieres cotizar o revisar tu poliza.";
+}
+
+function clearInputPlaceholder() {
+  const input = document.getElementById("chatInput");
+  if (!input) return;
+  input.placeholder = "";
 }
 
 function markAutoOpenCount(nextCount) {
@@ -142,7 +125,6 @@ function openByTrigger(triggerLabel) {
   if (!modal || !modal.hidden) return;
 
   openChatModal("Asistencia guiada");
-  appendContextGreeting("general", `activacion automatica (${triggerLabel})`);
   appendMetaMessage("Puedes preguntar por vehiculo, hogar, vida, gastos medicos o empresa.");
   markAutoOpenCount(chatState.autoOpenCount + 1);
 }
@@ -220,11 +202,7 @@ function openChatModal(contextLabel = "") {
     modal.classList.add("is-open");
   });
 
-  if (subtitle) {
-    subtitle.textContent = contextLabel
-      ? `Asistente virtual para seguros en El Salvador. Contexto: ${contextLabel}`
-      : "Asistente virtual de SUMA para seguros en El Salvador";
-  }
+  if (subtitle) subtitle.textContent = "Asistente virtual de SUMA para seguros en El Salvador";
   if (input) input.focus();
 }
 
@@ -288,13 +266,17 @@ function initIntentButtons() {
       event.preventDefault();
       const intent = button.getAttribute("data-chat-intent") || "general";
       const message = CHAT_CONFIG.intents[intent] || CHAT_CONFIG.intents.general;
-      const sourceLabel = resolveSourceContext(button);
+      const shouldSend = button.getAttribute("data-chat-send") === "immediate";
+      openChatModal();
 
-      openChatModal(sourceLabel);
-      appendContextGreeting(intent, sourceLabel);
+      if (input) {
+        input.value = shouldSend ? "" : message;
+        input.focus();
+      }
 
-      if (input) input.value = "";
-      await sendChatMessage(message, intent);
+      if (shouldSend) {
+        await sendChatMessage(message, intent);
+      }
     });
   });
 }
@@ -340,8 +322,89 @@ function initChatAutoOpenTriggers() {
   }
 }
 
+function initDirectContactForm() {
+  const form = document.getElementById("directContactForm");
+  const feedback = document.getElementById("directContactFeedback");
+  if (!form) return;
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const formData = new FormData(form);
+    const name = String(formData.get("name") || "").trim();
+    const phone = String(formData.get("phone") || "").trim();
+    const email = String(formData.get("email") || "").trim();
+    const insuranceType = String(formData.get("insuranceType") || "").trim();
+    const message = String(formData.get("message") || "").trim();
+    const attachmentsInput = document.getElementById("directAttachments");
+    const files = attachmentsInput?.files ? Array.from(attachmentsInput.files) : [];
+    const submitBtn = form.querySelector('button[type="submit"]');
+
+    if (!name || !phone || !insuranceType || !message) {
+      if (feedback) feedback.textContent = "Completa los campos obligatorios para enviar el caso.";
+      return;
+    }
+
+    if (files.length > CONTACT_CONFIG.maxFiles) {
+      if (feedback) feedback.textContent = `Puedes adjuntar hasta ${CONTACT_CONFIG.maxFiles} archivos.`;
+      return;
+    }
+
+    const oversize = files.find((file) => file.size > CONTACT_CONFIG.maxFileSizeBytes);
+    if (oversize) {
+      if (feedback) feedback.textContent = "Uno de los archivos supera el limite de 5 MB.";
+      return;
+    }
+
+    try {
+      if (submitBtn) submitBtn.disabled = true;
+      if (feedback) feedback.textContent = "Enviando solicitud...";
+
+      const attachments = await Promise.all(
+        files.map(async (file) => ({
+          filename: file.name,
+          contentType: file.type || "application/octet-stream",
+          data: await fileToBase64(file)
+        }))
+      );
+
+      const response = await fetch(CONTACT_CONFIG.contactEndpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, phone, email, insuranceType, message, attachments })
+      });
+
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(data.error || "No se pudo enviar la solicitud.");
+      }
+
+      form.reset();
+      if (feedback) feedback.textContent = "Solicitud enviada. Sofia recibira tu caso por correo.";
+    } catch (error) {
+      if (feedback) feedback.textContent = error.message || "Error al enviar solicitud.";
+    } finally {
+      if (submitBtn) submitBtn.disabled = false;
+    }
+  });
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const value = String(reader.result || "");
+      const base64 = value.includes(",") ? value.split(",")[1] : value;
+      resolve(base64);
+    };
+    reader.onerror = () => reject(new Error("No se pudo leer uno de los archivos adjuntos."));
+    reader.readAsDataURL(file);
+  });
+}
+
 initSmoothScroll();
 initChatWidget();
 initChatForm();
 initIntentButtons();
 initChatAutoOpenTriggers();
+initDirectContactForm();

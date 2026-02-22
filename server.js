@@ -7,7 +7,13 @@ const crypto = require("node:crypto");
 const PORT = Number(process.env.PORT || 4173);
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-4.1-mini";
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const CONTACT_TO_EMAIL = process.env.CONTACT_TO_EMAIL;
+const CONTACT_FROM_EMAIL = process.env.CONTACT_FROM_EMAIL;
 const ROOT = process.cwd();
+const MAX_BODY_BYTES = 12 * 1024 * 1024;
+const MAX_ATTACHMENTS = 3;
+const MAX_ATTACHMENT_BYTES = 5 * 1024 * 1024;
 
 const sessions = new Map();
 const MAX_TURNS = 12;
@@ -58,12 +64,18 @@ function getSystemPrompt() {
   return [
     "Eres el asistente de SUMA para seguros en El Salvador.",
     "Responde siempre en espanol.",
+    "Habla en tono conversacional, claro y cercano-profesional.",
     "Tu rol es orientativo, no emites dictamen legal vinculante.",
     "No inventes leyes, articulos, ni datos regulatorios.",
     "Si no hay suficiente certeza, dilo con claridad y sugiere escalamiento.",
     "No hagas promesas absolutas de cobertura.",
     "Cuando detectes caso complejo legal/contractual, inicia la respuesta con la etiqueta [ESCALAR_A_SOFIA].",
     "Da respuestas claras, practicas y accionables.",
+    "Regla estricta: responde en maximo 80 palabras salvo que el usuario pida mas detalle.",
+    "Usa 2 a 4 oraciones cortas, sin listas largas.",
+    "Haz una sola pregunta de seguimiento por turno, no varias a la vez.",
+    "Si necesitas mas datos para ayudar, pide solo el siguiente dato minimo mas importante.",
+    "Explicaciones largas solo si el usuario escribe explicitamente: 'explicalo en detalle'.",
     "Base de conocimiento interna:\n" + knowledgeBase
   ].join("\n");
 }
@@ -93,12 +105,35 @@ function extractAssistantText(responseJson) {
   return parts.join("\n").trim() || "No se pudo generar una respuesta en este momento.";
 }
 
+function userAskedForDetail(userMessage) {
+  const text = String(userMessage || "").toLowerCase();
+  return ["detalle", "detall", "explica", "paso a paso", "profund", "amplia", "completo"].some((token) =>
+    text.includes(token)
+  );
+}
+
+function toBriefConversationalReply(reply, userMessage) {
+  if (!reply) return reply;
+  if (userAskedForDetail(userMessage)) return reply;
+
+  const compact = reply.replace(/\s+/g, " ").trim();
+  if (compact.length <= 420) return compact;
+  const hardLimit = 300;
+  let brief = compact.slice(0, hardLimit);
+  const lastSpace = brief.lastIndexOf(" ");
+  if (lastSpace > 180) {
+    brief = brief.slice(0, lastSpace);
+  }
+  brief = brief.replace(/[,:;\-]+$/, "").trim();
+  return `${brief}. ¿Te parece si avanzamos con el siguiente dato clave?`;
+}
+
 function parseJsonBody(req) {
   return new Promise((resolve, reject) => {
     let raw = "";
     req.on("data", (chunk) => {
       raw += chunk;
-      if (raw.length > 1_000_000) {
+      if (raw.length > MAX_BODY_BYTES) {
         reject(new Error("Payload demasiado grande."));
       }
     });
@@ -117,6 +152,66 @@ function parseJsonBody(req) {
   });
 }
 
+function normalizeAttachments(value) {
+  if (!Array.isArray(value)) return [];
+  return value
+    .slice(0, MAX_ATTACHMENTS)
+    .map((item) => ({
+      filename: String(item?.filename || "").trim(),
+      contentType: String(item?.contentType || "application/octet-stream").trim(),
+      data: String(item?.data || "").trim()
+    }))
+    .filter((item) => item.filename && item.data);
+}
+
+async function sendContactEmail({ name, phone, email, insuranceType, message, attachments }) {
+  if (!RESEND_API_KEY || !CONTACT_TO_EMAIL || !CONTACT_FROM_EMAIL) {
+    throw new Error("Falta configurar RESEND_API_KEY, CONTACT_TO_EMAIL o CONTACT_FROM_EMAIL.");
+  }
+
+  const lines = [
+    "Nuevo formulario de contacto directo",
+    "",
+    `Nombre: ${name}`,
+    `Telefono: ${phone}`,
+    `Correo: ${email || "No compartido"}`,
+    `Tipo de seguro: ${insuranceType}`,
+    "",
+    "Detalle del caso:",
+    message
+  ];
+
+  const payload = {
+    from: CONTACT_FROM_EMAIL,
+    to: [CONTACT_TO_EMAIL],
+    subject: `Nuevo contacto SUMA - ${insuranceType}`,
+    text: lines.join("\n"),
+    attachments: attachments.map((file) => ({
+      filename: file.filename,
+      content: file.data
+    }))
+  };
+
+  if (email) {
+    payload.reply_to = email;
+  }
+
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${RESEND_API_KEY}`
+    },
+    body: JSON.stringify(payload)
+  });
+
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const errorMessage = result?.message || result?.error || "No se pudo enviar el correo.";
+    throw new Error(errorMessage);
+  }
+}
+
 function ensureSession(sessionId) {
   if (!sessions.has(sessionId)) {
     sessions.set(sessionId, []);
@@ -129,12 +224,22 @@ async function callOpenAI(messages) {
     throw new Error("OPENAI_API_KEY no configurada en el servidor.");
   }
 
+  const formattedInput = messages.map((message) => {
+    const isAssistant = message.role === "assistant";
+    return {
+      role: message.role,
+      content: [
+        {
+          type: isAssistant ? "output_text" : "input_text",
+          text: message.content
+        }
+      ]
+    };
+  });
+
   const payload = {
     model: OPENAI_MODEL,
-    input: messages.map((message) => ({
-      role: message.role,
-      content: [{ type: "input_text", text: message.content }]
-    }))
+    input: formattedInput
   };
 
   const response = await fetch("https://api.openai.com/v1/responses", {
@@ -230,6 +335,7 @@ const server = http.createServer(async (req, res) => {
         escalate = true;
         assistantText = assistantText.replace("[ESCALAR_A_SOFIA]", "").trim();
       }
+      assistantText = toBriefConversationalReply(assistantText, userMessage);
 
       history.push({ role: "assistant", content: assistantText });
       sessions.set(sessionId, history.slice(-MAX_TURNS * 2));
@@ -237,6 +343,37 @@ const server = http.createServer(async (req, res) => {
       json(res, 200, { reply: assistantText, escalate });
     } catch (error) {
       json(res, 500, { error: error.message || "Error interno del servidor." });
+    }
+    return;
+  }
+
+  if (req.method === "POST" && req.url === "/api/contact") {
+    try {
+      const body = await parseJsonBody(req);
+      const name = String(body.name || "").trim();
+      const phone = String(body.phone || "").trim();
+      const email = String(body.email || "").trim();
+      const insuranceType = String(body.insuranceType || "").trim();
+      const message = String(body.message || "").trim();
+      const attachments = normalizeAttachments(body.attachments);
+
+      if (!name || !phone || !insuranceType || !message) {
+        json(res, 400, { error: "Faltan campos obligatorios." });
+        return;
+      }
+
+      for (const file of attachments) {
+        const sizeInBytes = Buffer.byteLength(file.data, "base64");
+        if (sizeInBytes > MAX_ATTACHMENT_BYTES) {
+          json(res, 400, { error: "Uno de los archivos supera el limite permitido (5 MB)." });
+          return;
+        }
+      }
+
+      await sendContactEmail({ name, phone, email, insuranceType, message, attachments });
+      json(res, 200, { ok: true });
+    } catch (error) {
+      json(res, 500, { error: error.message || "No se pudo enviar la solicitud." });
     }
     return;
   }

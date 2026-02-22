@@ -22,11 +22,8 @@
       <nav aria-label="Navegacion principal">
         <a href="#servicios">Servicios</a>
         <a href="#sobre-nosotros">Sobre nosotros</a>
-        <a href="#como-funciona">Como funciona</a>
-        <a href="#asistente">Asistente en vivo</a>
         <a href="#faq">FAQ</a>
       </nav>
-      <a class="btn btn-sm btn-primary" href="#asistente" data-chat-intent="general">Abrir chat</a>
     </div>
   </header>
 
@@ -44,30 +41,14 @@
         </ul>
 
         <div class="cta-row">
-          <a class="btn btn-primary" href="#asistente" data-chat-intent="general">Hablar con el asistente</a>
-          <a class="btn btn-secondary" href="#asistente" data-chat-intent="revision">Enviar caso para revision (15 min)</a>
+          <button class="btn btn-primary" type="button" data-chat-intent="cotizar">Hablar con el asistente</button>
+          <button class="btn btn-secondary" type="button" data-chat-intent="revision">Enviar caso para revision (15 min)</button>
         </div>
 
         <div class="trust-strip" aria-label="Compromisos de confianza">
           <p>Atencion en vivo</p>
           <p>Enfoque legal local</p>
           <p>Confidencialidad</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="section assistant-teaser" id="asistente">
-      <div class="container">
-        <div class="assistant-banner">
-          <div class="assistant-banner-body">
-            <p class="kicker">Asistente destacado</p>
-            <h2>Habla con <span class="accent-text">SofIA</span>, tu asistente virtual de seguros</h2>
-            <p>Consulta en vivo coberturas, deducibles y polizas de El Salvador. Si tu caso es complejo, escalamos con Sofia Pacas de Avelar.</p>
-          </div>
-          <div class="assistant-banner-actions">
-            <a class="btn btn-primary" href="#asistente" data-chat-intent="general">Abrir SofIA ahora</a>
-            <p>Disponible durante toda tu visita. Confidencial y orientativo.</p>
-          </div>
         </div>
       </div>
     </section>
@@ -112,7 +93,7 @@
               <li>Asistencia vial y grua</li>
               <li>Deducibles alineados a tu capacidad de pago</li>
             </ul>
-            <a class="btn btn-outline" href="#asistente" data-chat-intent="vehiculo">Consultar vehiculo</a>
+            <a class="btn btn-outline" href="seguros/vehiculo.html">Ver alcance</a>
           </article>
 
           <article class="card card-service">
@@ -123,7 +104,7 @@
               <li>Comparacion de primas y deducibles</li>
               <li>Recomendacion segun edad y necesidades</li>
             </ul>
-            <a class="btn btn-outline" href="#asistente" data-chat-intent="gmm">Consultar gastos medicos</a>
+            <a class="btn btn-outline" href="seguros/gastos-medicos.html">Ver alcance</a>
           </article>
 
           <article class="card card-service">
@@ -134,7 +115,7 @@
               <li>Suma asegurada segun etapa de vida</li>
               <li>Diseno segun tus objetivos</li>
             </ul>
-            <a class="btn btn-outline" href="#asistente" data-chat-intent="vida">Consultar vida</a>
+            <a class="btn btn-outline" href="seguros/vida.html">Ver alcance</a>
           </article>
 
           <article class="card card-service">
@@ -145,7 +126,7 @@
               <li>Proteccion de contenido</li>
               <li>Cobertura para casa o apartamento</li>
             </ul>
-            <a class="btn btn-outline" href="#asistente" data-chat-intent="hogar">Consultar hogar</a>
+            <a class="btn btn-outline" href="seguros/hogar.html">Ver alcance</a>
           </article>
 
           <article class="card card-service">
@@ -156,18 +137,7 @@
               <li>Programas para empleados</li>
               <li>Polizas ajustadas al giro de negocio</li>
             </ul>
-            <a class="btn btn-outline" href="#asistente" data-chat-intent="empresas">Consultar empresas</a>
-          </article>
-
-          <article class="card card-service">
-            <h3>Revision de poliza actual</h3>
-            <p>Detectamos brechas, sobrecostos y oportunidades de mejora en tu cobertura.</p>
-            <ul class="mini-list">
-              <li>Analisis de coberturas y exclusiones</li>
-              <li>Recomendaciones accionables</li>
-              <li>Escalamiento con Sofia si aplica</li>
-            </ul>
-            <a class="btn btn-outline" href="#asistente" data-chat-intent="revision">Iniciar revision</a>
+            <a class="btn btn-outline" href="seguros/empresas.html">Ver alcance</a>
           </article>
         </div>
       </div>
@@ -187,30 +157,6 @@
           </article>
         </div>
         <p class="closing-line">Rapido cuando lo necesitas. Personal cuando lo amerita.</p>
-      </div>
-    </section>
-
-    <section class="section" id="como-funciona">
-      <div class="container">
-        <h2>Como funciona</h2>
-        <ol class="steps" aria-label="Proceso de atencion">
-          <li><span class="step-num">1</span><span>Inicias chat y explicas tu duda o tipo de seguro.</span></li>
-          <li><span class="step-num">2</span><span>El asistente te orienta con base tecnica y legal local.</span></li>
-          <li><span class="step-num">3</span><span>Si el caso es complejo, se escala para revision personalizada.</span></li>
-        </ol>
-        <a class="btn btn-primary" href="#asistente" data-chat-intent="general">Empezar ahora</a>
-      </div>
-    </section>
-
-    <section class="section review-highlight" id="revision-poliza">
-      <div class="container review-box">
-        <h2>Ya tienes poliza? Te la revisamos en 15 minutos</h2>
-        <ul class="check-list compact">
-          <li>Verificamos si estas pagando de mas.</li>
-          <li>Identificamos coberturas clave faltantes.</li>
-          <li>Te entregamos ajustes concretos y claros.</li>
-        </ul>
-        <a class="btn btn-primary" href="#asistente" data-chat-intent="revision">Enviar mi caso</a>
       </div>
     </section>
 
@@ -242,13 +188,57 @@
       </div>
     </section>
 
+    <section class="section section-alt" id="contacto-directo">
+      <div class="container">
+        <div class="section-head">
+          <h2>Prefieres contacto directo con Sofia?</h2>
+          <p>Si no avanzaste con el asistente, dejanos tus datos y tu caso para continuar por atencion personalizada.</p>
+        </div>
+
+        <form id="directContactForm" class="direct-form panel" autocomplete="on">
+          <div class="direct-form-grid">
+            <label for="directName">Nombre completo</label>
+            <input id="directName" name="name" type="text" required>
+
+            <label for="directPhone">Telefono</label>
+            <input id="directPhone" name="phone" type="tel" required>
+
+            <label for="directEmail">Correo (opcional)</label>
+            <input id="directEmail" name="email" type="email">
+
+            <label for="directInsuranceType">Tipo de seguro</label>
+            <select id="directInsuranceType" name="insuranceType" required>
+              <option value="">Selecciona una opcion</option>
+              <option value="Vehiculo">Vehiculo</option>
+              <option value="Gastos medicos">Gastos medicos</option>
+              <option value="Vida">Vida</option>
+              <option value="Hogar">Hogar / Residencial</option>
+              <option value="Empresas">Empresas</option>
+              <option value="Revision de poliza">Revision de poliza</option>
+            </select>
+
+            <label for="directMessage">Que necesitas resolver?</label>
+            <textarea id="directMessage" name="message" rows="4" required></textarea>
+
+            <label for="directAttachments">Adjuntar archivos (opcional)</label>
+            <input id="directAttachments" name="attachments" type="file" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+          </div>
+
+          <div class="cta-row">
+            <button class="btn btn-primary" type="submit">Enviar formulario</button>
+          </div>
+          <p class="chat-note" id="directContactFeedback" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+
     <section class="section final-cta">
       <div class="container final-shell">
         <h2>Listo. Conversemos y resolvemos tu seguro hoy.</h2>
         <p>Recibe una orientacion inmediata y una recomendacion clara para decidir con confianza.</p>
         <div class="cta-row">
-          <a class="btn btn-primary" href="#asistente" data-chat-intent="general">Abrir chat</a>
-          <a class="btn btn-secondary" href="#asistente" data-chat-intent="revision">Revisar mi poliza</a>
+          <button class="btn btn-primary" type="button" data-chat-intent="cotizar">Abrir chat</button>
+          <button class="btn btn-secondary" type="button" data-chat-intent="revision">Revisar mi poliza</button>
         </div>
       </div>
     </section>
@@ -264,20 +254,20 @@
     </div>
   </footer>
 
-  <!-- TODO marca: reemplazar assets/sofia-avatar.svg por foto o ilustracion oficial de SofIA -->
-  <button type="button" class="chat-launcher" id="chatLauncher" aria-label="Abrir chat con SofIA">
+  <!-- TODO marca: reemplazar assets/sofia-avatar.svg por foto o ilustracion oficial -->
+  <button type="button" class="chat-launcher" id="chatLauncher" aria-label="Abrir chat con asistente virtual">
     <span class="chat-launcher-avatar" aria-hidden="true">
-      <img src="assets/sofia-avatar.svg" alt="Avatar de SofIA">
+      <img src="assets/sofia-avatar.svg" alt="Avatar de asistente virtual">
     </span>
-    <span class="chat-launcher-text">SofIA en vivo</span>
+    <span class="chat-launcher-text">Asistente en vivo</span>
   </button>
 
   <div class="chat-modal" id="chatModal" hidden>
     <div class="chat-modal-backdrop" data-chat-close></div>
-    <section class="chat-modal-panel" role="dialog" aria-modal="true" aria-label="SofIA, asistente virtual de SUMA">
+    <section class="chat-modal-panel" role="dialog" aria-modal="true" aria-label="Asistente virtual de SUMA">
       <header class="chat-modal-header">
         <div class="chat-avatar" aria-hidden="true">
-          <img src="assets/sofia-avatar.svg" alt="Avatar de SofIA">
+          <img src="assets/sofia-avatar.svg" alt="Avatar de asistente virtual">
         </div>
         <div>
           <p class="chat-title">SofIA</p>
@@ -287,10 +277,8 @@
       </header>
 
       <div class="quick-actions" aria-label="Preguntas sugeridas">
-        <button type="button" class="chip" data-chat-intent="vehiculo">Seguro de vehiculo</button>
-        <button type="button" class="chip" data-chat-intent="gmm">Gastos medicos</button>
-        <button type="button" class="chip" data-chat-intent="empresas">Seguros para empresa</button>
-        <button type="button" class="chip" data-chat-intent="revision">Revision de poliza</button>
+        <button type="button" class="chip" data-chat-intent="cotizar" data-chat-send="immediate">Cotizar seguro</button>
+        <button type="button" class="chip" data-chat-intent="revision" data-chat-send="immediate">Revision de poliza</button>
       </div>
 
       <div class="chat-messages" id="chatMessages" role="log" aria-live="polite"></div>
@@ -301,18 +289,7 @@
         <button class="btn btn-primary" type="submit" id="chatSendBtn">Enviar</button>
       </form>
 
-      <aside class="chat-side panel" aria-label="Informacion legal y alcance">
-        <h3>Alcance de SofIA</h3>
-        <ul class="mini-list">
-          <li>Resuelve preguntas frecuentes sobre polizas y coberturas.</li>
-          <li>Explica conceptos comunes en lenguaje simple.</li>
-          <li>Orienta siguientes pasos para cotizar o revisar tu poliza.</li>
-        </ul>
-
-        <h3>Importante</h3>
-        <p>La conversacion es orientativa y no sustituye asesoria legal vinculante ni dictamen contractual definitivo.</p>
-        <a class="btn btn-secondary" href="#asistente" data-chat-intent="escalar">Solicitar revision con Sofia</a>
-      </aside>
+      <p class="chat-note">Orientacion inicial. Para casos complejos, solicitamos revision personal con asesoria humana.</p>
     </section>
   </div>
 
